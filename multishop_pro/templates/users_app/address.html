@@ -1,0 +1,205 @@
+{% extends "users_app/master.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+    .address-section{
+        background:#f5f5f5;
+        padding:60px 15px;
+    }
+
+    .address-card{
+        background:#ffffff;
+        max-width:850px;
+        margin:auto;
+        padding:40px;
+        border-radius:20px;
+        box-shadow:0px 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .address-title{
+        font-size:32px;
+        font-weight:700;
+        color:#3D464D;
+        margin-bottom:10px;
+    }
+
+    .address-subtitle{
+        color:#777;
+        margin-bottom:35px;
+    }
+
+    .address-label{
+        font-weight:600;
+        color:#3D464D;
+        margin-bottom:8px;
+        display:block;
+    }
+
+    .address-input{
+        width:100%;
+        height:52px;
+        border:1px solid #ddd;
+        border-radius:12px;
+        padding:0 15px;
+        outline:none;
+        transition:0.3s;
+    }
+
+    .address-input:focus{
+        border-color:#FFD333;
+        box-shadow:0px 0px 5px rgba(255,211,51,0.5);
+    }
+
+    .save-btn{
+        width:100%;
+        height:55px;
+        border:none;
+        border-radius:12px;
+        background:#FFD333;
+        color:#000;
+        font-size:18px;
+        font-weight:600;
+        transition:0.3s;
+    }
+
+    .save-btn:hover{
+        background:#3D464D;
+        color:#fff;
+    }
+
+    @media(max-width:768px){
+
+        .address-card{
+            padding:25px;
+        }
+
+        .address-title{
+            font-size:26px;
+        }
+    }
+
+    @media(max-width:576px){
+
+        .address-card{
+            padding:20px;
+        }
+
+        .address-title{
+            font-size:22px;
+        }
+
+        .save-btn{
+            font-size:16px;
+        }
+    }
+
+</style>
+
+<section class="address-section">
+
+    <div class="container">
+
+        <div class="address-card">
+
+            <h2 class="address-title">
+                Add Delivery Address
+            </h2>
+
+            <p class="address-subtitle">
+                Please enter your delivery details carefully.
+            </p>
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="row">
+
+                    <!-- Road Name -->
+                    <div class="col-md-6 mb-4">
+
+                        <label class="address-label">
+                            Road Name
+                        </label>
+
+                        <input type="text"
+                               name="road_name"
+                               class="address-input"
+                               placeholder="Enter Road Name">
+
+                    </div>
+
+                    <!-- House Number -->
+                    <div class="col-md-6 mb-4">
+
+                        <label class="address-label">
+                            House Number
+                        </label>
+
+                        <input type="text"
+                               name="house_no"
+                               class="address-input"
+                               placeholder="Enter House Number">
+
+                    </div>
+
+                    <!-- City -->
+                    <div class="col-md-6 mb-4">
+
+                        <label class="address-label">
+                            City
+                        </label>
+
+                        <input type="text"
+                               name="city"
+                               class="address-input"
+                               placeholder="Enter City">
+
+                    </div>
+
+                    <!-- Pincode -->
+                    <div class="col-md-6 mb-4">
+
+                        <label class="address-label">
+                            Pincode
+                        </label>
+
+                        <input type="number"
+                               name="pincode"
+                               class="address-input"
+                               placeholder="Enter Pincode">
+
+                    </div>
+
+                    <!-- State -->
+                    <div class="col-md-12 mb-4">
+
+                        <label class="address-label">
+                            State
+                        </label>
+
+                        <input type="text"
+                               name="state"
+                               class="address-input"
+                               placeholder="Enter State">
+
+                    </div>
+
+                </div>
+                <button type="submit" class="save-btn">
+                    SAVE ADDRESS
+                </button>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock content %}

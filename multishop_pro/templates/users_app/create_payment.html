@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Razorpay Checkout | MultiShop</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ffd333;
+            --primary-dark: #e0b822;
+            --dark: #3d464d;
+            --dark-deep: #1e2229;
+            --light: #f5f5f5;
+            --success: #2d9e58;
+            --border-color: #e5e9f0;
+            --shadow-premium: 0 25px 60px rgba(0, 0, 0, 0.08);
+            --gradient-premium: linear-gradient(135deg, #3d464d 0%, #1e2229 100%);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f8fafc;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .checkout-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: var(--shadow-premium);
+            width: 100%;
+            max-width: 900px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Order Summary Side */
+        .summary-side {
+            background: #ffffff;
+            padding: 40px;
+            border-right: 1px solid var(--border-color);
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--dark-deep);
+            position: relative;
+            display: inline-block;
+        }
+
+        .summary-title::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .product-list {
+            max-height: 280px;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            padding-right: 5px;
+        }
+
+        .product-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .product-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .product-list::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .product-img {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-details h6 {
+            margin: 0;
+            font-weight: 600;
+            color: var(--dark-deep);
+            font-size: 0.95rem;
+        }
+
+        .product-details span {
+            font-size: 0.8rem;
+            color: #64748b;
+            display: block;
+        }
+
+        .product-price-item {
+            font-weight: 600;
+            color: var(--dark-deep);
+        }
+
+        .fee-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid var(--dark);
+            color: var(--dark-deep);
+        }
+
+        .total-row h5 {
+            font-weight: 800;
+            font-size: 1.4rem;
+        }
+
+        /* Payment Form Side */
+        .payment-side {
+            background: var(--gradient-premium);
+            padding: 40px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .payment-side::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 100% 0%, rgba(255, 211, 51, 0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .brand-header h2 span {
+            color: var(--primary);
+        }
+
+        .brand-header p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0;
+        }
+
+        .secure-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        .secure-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .secure-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .secure-icon {
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 211, 51, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+
+        .secure-text h6 {
+            margin: 0;
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .secure-text p {
+            margin: 0;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .btn-razorpay {
+            background: var(--primary);
+            color: var(--dark-deep);
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 10px 25px rgba(255, 211, 51, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-razorpay:hover {
+            background: white;
+            color: var(--dark-deep);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-razorpay:active {
+            transform: translateY(-1px);
+        }
+
+        .trust-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            opacity: 0.5;
+            margin-top: 25px;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="checkout-container">
+        <div class="checkout-grid">
+
+            <!-- Summary Side -->
+            <div class="summary-side">
+                <h4 class="summary-title">Order Summary</h4>
+
+                <!-- Product List -->
+                <div class="product-list">
+                    {% for key, value in cart.items %}
+                    <div class="product-item">
+                        <div class="product-info">
+                            <img class="product-img" src="{{ value.image }}" alt="{{ value.name }}">
+                            <div class="product-details">
+                                <h6>{{ value.name }}</h6>
+                                <span>Qty: {{ value.quantity }} | Size: {{ value.size }}</span>
+                            </div>
+                        </div>
+                        <div class="product-price-item">
+                            ₹{% widthratio value.price 1 value.quantity %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Price Breakdown -->
+                <div class="fee-row">
+                    <span>Subtotal</span>
+                    <span class="text-dark font-weight-bold">₹{{ grand_total }}</span>
+                </div>
+                <div class="fee-row">
+                    <span>Shipping Fee</span>
+                    <span class="text-dark font-weight-bold">₹{{ shipping }}</span>
+                </div>
+
+                <div class="total-row">
+                    <h5>Grand Total</h5>
+                    <h5>₹{{ order_total }}</h5>
+                </div>
+            </div>
+
+            <!-- Payment Side -->
+            <div class="payment-side">
+                <div class="brand-header">
+                    <h2>Multi<span>Shop</span></h2>
+                    <p>Secure Checkout Portal</p>
+                </div>
+
+                <div>
+                    <!-- Secure Items -->
+                    <div class="secure-card">
+                        <div class="secure-item">
+                            <div class="secure-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <div class="secure-text">
+                                <h6>Encrypted Transaction</h6>
+                                <p>SSL secured 256-bit connection</p>
+                            </div>
+                        </div>
+                        <div class="secure-item">
+                            <div class="secure-icon">
+                                <i class="fas fa-redo"></i>
+                            </div>
+                            <div class="secure-text">
+                                <h6>Refund Protection</h6>
+                                <p>Easy dispute resolution system</p>
+                            </div>
+                        </div>
+                        <div class="secure-item">
+                            <div class="secure-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="secure-text">
+                                <h6>Razorpay Test Mode</h6>
+                                <p>Safe sandbox environment enabled</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Razorpay Hidden Callback Form -->
+                    <form action="{% url 'payment_view' %}" method="POST" id="razorpayForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+                        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+
+                        <button type="button" class="btn-razorpay" id="payBtn">
+                            <i class="fas fa-shield-alt"></i> Pay Securely
+                        </button>
+                    </form>
+                </div>
+
+                <div class="trust-badge">
+                    <i class="fas fa-shield-halved"></i> Verified by Razorpay PCI-DSS
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Razorpay Checkout Integration -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.getElementById('payBtn').onclick = function (e) {
+            e.preventDefault();
+
+            var options = {
+                "key": "{{ razorpay_key_id }}",
+                "amount": {{ amount_paisa }},
+                "currency": "INR",
+                "name": "MultiShop e-Commerce",
+                "description": "Payment for Order Summary",
+                "image": "https://img.icons8.com/color/96/shopping-bag.png",
+                "order_id": "{{ razorpay_order_id }}",
+                "handler": function (response) {
+                    document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                    document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                    document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                    document.getElementById('razorpayForm').submit();
+                },
+                "prefill": {
+                    "name": "{{ user_name|escapejs }}",
+                    "email": "{{ user_email|escapejs }}"{% if user_phone and user_phone != "None" %},
+                    "contact": "{{ user_phone|escapejs }}"{% endif %}
+                },
+                "theme": {
+                    "color": "#ffd333" // Matches the yellow primary brand color
+                }
+            };
+
+            var rzp1 = new Razorpay(options);
+            rzp1.on('payment.failed', function (response) {
+                alert("Payment Failed! " + response.error.description);
+            });
+            rzp1.open();
+        }
+    </script>
+</body>
+
+</html>

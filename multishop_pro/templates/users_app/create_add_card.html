@@ -1,0 +1,189 @@
+{% extends "users_app/master.html" %}
+{% block content %}
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <title>Add To Cart</title>
+
+    <style>
+
+    .cart-card{
+
+        background:white !important;
+        border-radius:12px !important;
+        box-shadow:0px 4px 15px rgba(0,0,0,0.08) !important;
+        padding:30px !important;
+
+    }
+
+    .cart-title{
+
+        color:#3D464D !important;
+        text-align:center !important;
+        font-weight:700 !important;
+        margin-bottom:25px !important;
+
+    }
+
+    .cart-title span{
+
+        color:#FFD333 !important;
+
+    }
+
+    .cart-label{
+
+        color:#3D464D !important;
+        font-weight:600 !important;
+        margin-bottom:8px !important;
+
+    }
+
+    .cart-input{
+
+        border:1px solid #ddd !important;
+        border-radius:8px !important;
+        padding:12px !important;
+
+    }
+
+    .cart-input:focus{
+
+        border-color:#FFD333 !important;
+        box-shadow:0px 0px 5px rgba(255,211,51,0.5) !important;
+
+    }
+
+    .cart-btn{
+
+        width:100% !important;
+        background:#FFD333 !important;
+        color:#3D464D !important;
+        border:none !important;
+        padding:12px !important;
+        border-radius:8px !important;
+        font-weight:700 !important;
+
+    }
+
+    .cart-btn:hover{
+
+        background:#3D464D !important;
+        color:white !important;
+
+    }
+
+</style>
+    
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="cart-card">
+
+                <h2 class="cart-title">
+
+                    Add <span>To Cart</span>
+
+                </h2>
+
+                <form method="POST" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+
+                        <label class="cart-label">
+                            Product Image
+                        </label>
+
+                        <input type="file"
+                               name="product_image"
+                               class="form-control cart-input">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="cart-label">
+                            Product Name
+                        </label>
+
+                        <input type="text"
+                               name="pro_name"
+                               class="form-control cart-input"
+                               placeholder="Enter Product Name">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="cart-label">
+                            Product Price
+                        </label>
+
+                        <input type="number"
+                               name="pro_price"
+                               class="form-control cart-input"
+                               placeholder="Enter Product Price">
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="cart-label">
+                            Product Quantity
+                        </label>
+
+                        <input type="number"
+                               name="pro_quatity"
+                               class="form-control cart-input"
+                               placeholder="Enter Quantity">
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="cart-label">
+                            Total Price
+                        </label>
+
+                        <input type="number"
+                               name="total_price"
+                               class="form-control cart-input"
+                               placeholder="Enter Total Price">
+
+                    </div>
+
+                    <button type="submit"
+                            class="cart-btn">
+
+                        ADD TO CART
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>
+
+{% endblock content %}

@@ -1,0 +1,442 @@
+{% extends "users_app/master.html" %}
+{% block content %}
+{% load static %}
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+    .pd-wrapper {
+        font-family: 'DM Sans', sans-serif;
+        background: #f7f5f2;
+        min-height: 100vh;
+        padding: 40px 0 80px;
+    }
+
+    /* Breadcrumb */
+    .pd-breadcrumb {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #999;
+        margin-bottom: 32px;
+    }
+    .pd-breadcrumb span { color: #c8a96e; }
+
+    /* Image Panel */
+    .pd-image-panel {
+        position: sticky;
+        top: 24px;
+    }
+    .pd-main-image {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+        transition: transform 0.4s ease;
+    }
+    .pd-main-image:hover { transform: scale(1.02); }
+
+    /* Discount Badge */
+    .pd-badge {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        background: #e63946;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 2px;
+        letter-spacing: 0.04em;
+    }
+
+    /* Info Panel */
+    .pd-info { padding-left: 48px; }
+
+    .pd-category-trail {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #c8a96e;
+        margin-bottom: 12px;
+    }
+
+    .pd-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.4rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        line-height: 1.2;
+        margin-bottom: 8px;
+    }
+
+    .pd-brand {
+        font-size: 13px;
+        color: #888;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+    }
+    .pd-brand strong { color: #444; }
+
+    .pd-divider {
+        border: none;
+        border-top: 1px solid #e8e4de;
+        margin: 24px 0;
+    }
+
+    /* Price */
+    .pd-original-price {
+        font-size: 15px;
+        color: #aaa;
+        text-decoration: line-through;
+        margin-bottom: 4px;
+    }
+    .pd-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        margin-bottom: 6px;
+    }
+    .pd-sale-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+    .pd-saving {
+        background: #fff3cd;
+        color: #856404;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 4px 10px;
+        border-radius: 2px;
+        letter-spacing: 0.04em;
+    }
+
+    /* Stock */
+    .pd-stock-in {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        color: #2d6a4f;
+        font-weight: 500;
+        background: #d8f3dc;
+        padding: 6px 14px;
+        border-radius: 2px;
+        margin-top: 14px;
+    }
+    .pd-stock-out {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        color: #9d0208;
+        font-weight: 500;
+        background: #ffd7d7;
+        padding: 6px 14px;
+        border-radius: 2px;
+        margin-top: 14px;
+    }
+    .pd-stock-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+
+    /* Description */
+    .pd-desc-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #aaa;
+        margin-bottom: 10px;
+        margin-top: 28px;
+    }
+    .pd-desc {
+        font-size: 15px;
+        color: #555;
+        line-height: 1.8;
+    }
+
+    /* Action Buttons */
+    .pd-actions {
+        display: flex;
+        gap: 14px;
+        margin-top: 36px;
+    }
+    .btn-cart {
+        flex: 1;
+        padding: 15px;
+        background: #1a1a1a;
+        color: #fff;
+        border: none;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+        text-align: center;
+    }
+    .btn-cart:hover { background: #c8a96e; color: #fff; }
+
+    .btn-back {
+        padding: 15px 24px;
+        background: transparent;
+        color: #1a1a1a;
+        border: 1.5px solid #1a1a1a;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 2px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-align: center;
+    }
+    .btn-back:hover { background: #1a1a1a; color: #fff; }
+
+    /* Meta info */
+    .pd-meta {
+        margin-top: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .pd-meta-row {
+        display: flex;
+        font-size: 13px;
+        color: #888;
+    }
+    .pd-meta-row .label {
+        width: 110px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 11px;
+        color: #bbb;
+        padding-top: 2px;
+    }
+    .pd-meta-row .value { color: #444; font-weight: 500; }
+
+    @media (max-width: 768px) {
+        .pd-info { padding-left: 0; margin-top: 28px; }
+        .pd-title { font-size: 1.8rem; }
+        .pd-image-panel { position: static; }
+
+
+
+
+        /* =========================
+   Size & Cart Section
+========================= */
+
+.cart-form{
+    margin-top: 30px;
+}
+
+.size-box{
+    background: #ffffff;
+    border: 1px solid #ebe7df;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    max-width: 420px;
+}
+
+.size-title{
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #444;
+    margin-bottom: 16px;
+}
+
+.size-select{
+    width: 100%;
+    height: 52px;
+    border: 1px solid #d8d2c8;
+    border-radius: 4px;
+    padding: 0 14px;
+    font-size: 15px;
+    color: #444;
+    background: #fff;
+    outline: none;
+    transition: all 0.3s ease;
+    margin-bottom: 18px;
+}
+
+.size-select:focus{
+    border-color: #c8a96e;
+    box-shadow: 0 0 0 4px rgba(200,169,110,0.15);
+}
+
+.cart-btn{
+    width: 100%;
+    height: 54px;
+    border: none;
+    border-radius: 4px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cart-btn:hover{
+    background: #c8a96e;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(200,169,110,0.25);
+}
+
+.cart-btn:active{
+    transform: scale(0.98);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px){
+
+    .size-box{
+        max-width: 100%;
+        padding: 20px;
+    }
+
+    .cart-btn{
+        height: 50px;
+    }
+}
+    }
+</style>
+
+<div class="pd-wrapper">
+    <div class="container">
+
+        <!-- Breadcrumb -->
+        <div class="pd-breadcrumb">
+            <a href="{% url 'index_view' %}" style="color:inherit;text-decoration:none;">Home</a>
+            &nbsp;/&nbsp;
+            {{ product.cate_one.category_name1 }}
+            &nbsp;/&nbsp;
+            {{ product.cate_two.category_name2 }}
+            &nbsp;/&nbsp;
+            <span>{{ product.cate_three.category_name3 }}</span>
+        </div>
+
+        <div class="row">
+
+            <!-- Image -->
+            <div class="col-md-6">
+                <div class="pd-image-panel position-relative">
+                    {% if discount_percent > 0 %}
+                        <div class="pd-badge">−{{ discount_percent }}% OFF</div>
+                    {% endif %}
+                    <img src="{{ product.product_image.url }}" alt="Image" style="width:100%; height:650px"
+                         class="pd-main-image"
+                         alt="{{ product.product_name }}">
+                </div>
+            </div>
+
+            <!-- Details -->
+            <div class="col-md-6">
+                <div class="pd-info">
+
+                    <!-- Category Trail -->
+                    <div class="pd-category-trail">
+                        {{ product.cate_one.category_name1 }} › {{ product.cate_two.category_name2 }} › {{ product.cate_three.category_name3 }}
+                    </div>
+
+                    <!-- Title -->
+                    <h1 class="pd-title">{{ product.product_name }}</h1>
+
+                    <!-- Brand -->
+                    <div class="pd-brand">Brand: <strong>{{ product.brand }}</strong></div>
+
+                    <hr class="pd-divider">
+
+                    <!-- Price -->
+                    <div class="pd-original-price">₹{{ product.product_price }}</div>
+                    <div class="pd-price-row">
+                        <div class="pd-sale-price">₹{{ product.descount_price }}</div>
+                        {% if discount_percent > 0 %}
+                            <div class="pd-saving">You save {{ discount_percent }}%</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Stock Status -->
+                    {% if product.stock > 0 %}
+                        <div class="pd-stock-in">
+                            <div class="pd-stock-dot"></div>
+                            In Stock — {{ product.stock }} units available
+                        </div>
+                    {% else %}
+                        <div class="pd-stock-out">
+                            <div class="pd-stock-dot"></div>
+                            Out of Stock
+                        </div>
+                    {% endif %}
+
+                    <hr class="pd-divider">
+
+                    <!-- Description -->
+                    <div class="pd-desc-label">Description</div>
+                    <p class="pd-desc">{{ product.product_despcrition }}</p>
+
+                    <!-- Meta Info -->
+                    <div class="pd-meta">
+                        <div class="pd-meta-row">
+                            <span class="label">Category</span>
+                            <span class="value">{{ product.cate_one.category_name1 }}</span>
+                        </div>
+                        <div class="pd-meta-row">
+                            <span class="label">Added On</span>
+                            <span class="value">{{ product.create_at|date:"d M Y" }}</span>
+                        </div>
+                        <!-- Size Form -->
+                        <form action="{% url 'cart_add' product.id %}" method="post" class="cart-form">
+                            {% csrf_token %}
+
+                            <div class="size-box">
+
+                                <h4 class="size-title">Select Size</h4>
+
+                                <select name="size" required class="btn-back">
+                                    <option value="">Choose Size</option>
+                                    <option value="S">Small (S)</option>
+                                    <option value="M">Medium (M)</option>
+                                    <option value="L">Large (L)</option>
+                                    <option value="XL">Extra Large (XL)</option>
+                                </select>
+
+                                <button type="submit" class="btn-back">
+                                    Add To Cart
+                                </button>
+
+                            </div>
+                        </form>   
+                    </div>
+                    <div class="pd-actions">
+                        <a href="{% url "add_to_wishlist"  product.id %}" class="btn-back">Wish List</a>                        
+                    </div>
+                    <div class="pd-actions">
+                        <a href="{% url 'shop_view' %}" class="btn-back">← Back to Shop</a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

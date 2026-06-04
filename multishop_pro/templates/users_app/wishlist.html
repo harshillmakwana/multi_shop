@@ -1,0 +1,271 @@
+{% extends "users_app/master.html" %}
+{% block content %}
+{% load static %}
+
+{% comment %} {% for i in item %}
+<div class="card">
+    <img src="{{ i.pro_name.product_image.url }}" style="width:20%; height:350px"  alt="{{ i.pro_name.product_name }}" >
+    <div class="card-body">
+        <h6>{{ i.pro_name.product_name }}</h6>
+        <p>₹{{ i.pro_name.descount_price }}</p>
+        <a href="{% url 'pro_deatils_view' i.pro_name.id %}" class="btn btn-sm btn-dark">View</a> <br>
+        <a href="{% url 'remove_wishlist' i.pro_name.id %}" class="btn btn-sm btn-danger">Remove</a>
+    </div>
+</div>
+{% empty %}
+    <p>Your wishlist is empty.</p>
+{% endfor %} {% endcomment %}
+
+
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap');
+
+    .wl-wrapper {
+        font-family: 'DM Sans', sans-serif;
+        background: #f7f5f2;
+        min-height: 100vh;
+        padding: 50px 0 80px;
+    }
+
+    .wl-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 40px;
+    }
+
+    .wl-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .wl-count {
+        font-size: 13px;
+        color: #999;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    /* Card */
+    .wl-card {
+        background: #fff;
+        border-radius: 4px;
+        overflow: hidden;
+        display: flex;
+        gap: 0;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+        transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .wl-card:hover {
+        box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        transform: translateY(-2px);
+    }
+
+    /* Image */
+    .wl-img-wrap {
+        width: 200px;
+        min-width: 200px;
+        overflow: hidden;
+        background: #f0ede8;
+    }
+    .wl-img-wrap img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    .wl-card:hover .wl-img-wrap img {
+        transform: scale(1.05);
+    }
+
+    /* Body */
+    .wl-body {
+        padding: 28px 32px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .wl-product-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 6px;
+    }
+
+    .wl-brand {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #bbb;
+        margin-bottom: 16px;
+    }
+
+    .wl-price-row {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 24px;
+    }
+    .wl-sale-price {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #1a1a1a;
+    }
+    .wl-original-price {
+        font-size: 14px;
+        color: #bbb;
+        text-decoration: line-through;
+    }
+
+    /* Buttons */
+    .wl-actions {
+        display: flex;
+        gap: 12px;
+    }
+    .btn-view {
+        padding: 10px 24px;
+        background: #1a1a1a;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 2px;
+        text-decoration: none;
+        transition: background 0.2s;
+        border: none;
+    }
+    .btn-view:hover { background: #c8a96e; color: #fff; }
+
+    .btn-remove {
+        padding: 10px 24px;
+        background: transparent;
+        color: #e63946;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 2px;
+        text-decoration: none;
+        border: 1.5px solid #e63946;
+        transition: all 0.2s;
+    }
+    .btn-remove:hover { background: #e63946; color: #fff; }
+
+    /* Empty State */
+    .wl-empty {
+        text-align: center;
+        padding: 100px 20px;
+    }
+    .wl-empty-icon {
+        font-size: 64px;
+        margin-bottom: 20px;
+        opacity: 0.2;
+    }
+    .wl-empty h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        color: #1a1a1a;
+        margin-bottom: 10px;
+    }
+    .wl-empty p {
+        color: #999;
+        font-size: 14px;
+        margin-bottom: 28px;
+    }
+    .btn-shop {
+        padding: 14px 36px;
+        background: #1a1a1a;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-radius: 2px;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+    .btn-shop:hover { background: #c8a96e; color: #fff; }
+
+    /* Messages */
+    .wl-messages { margin-bottom: 24px; }
+
+    @media (max-width: 600px) {
+        .wl-card { flex-direction: column; }
+        .wl-img-wrap { width: 100%; min-width: 100%; }
+        .wl-img-wrap img { height: 200px; }
+        .wl-body { padding: 20px; }
+    }
+</style>
+
+<div class="wl-wrapper">
+    <div class="container">
+
+        <!-- Messages -->
+        <div class="wl-messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Header -->
+        <div class="wl-header">
+            <h1 class="wl-title">My Wishlist</h1>
+            <span class="wl-count">{{ items.count }} item{{ items.count|pluralize }}</span>
+        </div>
+
+        <!-- ✅ Fixed: 'items' matches what view sends -->
+        {% for i in item %}
+        <div class="wl-card">
+
+            <!-- Image -->
+            <div class="wl-img-wrap">
+                <img src="{{ i.pro_name.product_image.url }}"
+                     alt="{{ i.pro_name.product_name }}">
+            </div>
+
+            <!-- Info -->
+            <div class="wl-body">
+                <div>
+                    <div class="wl-brand">{{ i.pro_name.brand }}</div>
+                    <div class="wl-product-name">{{ i.pro_name.product_name }}</div>
+                    <div class="wl-price-row">
+                        <span class="wl-sale-price">₹{{ i.pro_name.descount_price }}</span>
+                        <span class="wl-original-price">₹{{ i.pro_name.product_price }}</span>
+                    </div>
+                </div>
+
+                <div class="wl-actions">
+                    <a href="{% url 'pro_deatils_view' i.pro_name.id %}" class="btn-view">View Product</a>
+                    <a href="{% url 'remove_wishlist' i.pro_name.id %}" class="btn-remove">✕ Remove</a>
+                </div>
+            </div>
+
+        </div>
+        {% empty %}
+
+        <!-- Empty State -->
+        <div class="wl-empty">
+            <div class="wl-empty-icon">🤍</div>
+            <h4>Your wishlist is empty</h4>
+            <p>Save items you love and come back to them anytime.</p>
+            <a href="{% url 'shop_view' %}" class="btn-shop">Continue Shopping</a>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+{% endblock %}
