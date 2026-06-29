@@ -310,7 +310,7 @@ def payment_view(request, id=None):
             # Save the order using the Razorpay order ID and link to the RazorpayPayment record
             new_order = Order.objects.create(
                 user=request.user,
-                order_id=razorpay_order_id,
+                order_id=order_id,
                 total_amount=order_total,
                 payment=payment_record
             )
@@ -335,7 +335,7 @@ def payment_view(request, id=None):
             }
 
             messages.success(request, "Payment verified successfully!")
-            return redirect('order_history_view')
+            return redirect('payment_success')
 
         except Exception as e:
             messages.error(request, f"Payment verification failed: {str(e)}")
@@ -371,20 +371,38 @@ def payment_view(request, id=None):
 
 
 @login_required(login_url='login_view')
-def payment_success_view(request):
-    payment_info = request.session.get('last_payment')
-    if not payment_info:
-        return redirect('shop_view')
-
-    context = {
-        'payment_id': payment_info.get('payment_id'),
-        'order_id': payment_info.get('order_id'),
-        'amount': payment_info.get('amount')
-    }
-    # Clear session info so page is only accessible once
-    if 'last_payment' in request.session:
-        del request.session['last_payment']
-        request.session.modified = True
+def payment_success_view(request, order_id=None):
+    if order_id:
+        order = get_object_or_404(Order, order_id=order_id, user=request.user)
+        context = {
+            'order_id': order.order_id,
+            'payment_id': order.payment.payment_id if order.payment else 'N/A',
+            'amount': order.total_amount
+        }
+    else:
+        payment_info = request.session.get('last_payment')
+        if payment_info:
+            context = {
+                'payment_id': payment_info.get('payment_id'),
+                'order_id': payment_info.get('order_id'),
+                'amount': payment_info.get('amount')
+            }
+            # Clear session info so page is only accessible once in session mode
+            if 'last_payment' in request.session:
+                del request.session['last_payment']
+                request.session.modified = True
+        else:
+            # Fallback to the latest order in the database for the user
+            latest_order = Order.objects.filter(user=request.user).order_by('-created_at').first()
+            if latest_order:
+                context = {
+                    'order_id': latest_order.order_id,
+                    'payment_id': latest_order.payment.payment_id if latest_order.payment else 'N/A',
+                    'amount': latest_order.total_amount
+                }
+            else:
+                messages.warning(request, "You have not placed any orders yet.")
+                return redirect('shop_view')
 
     return render(request, 'users_app/payment_success.html', context)
 

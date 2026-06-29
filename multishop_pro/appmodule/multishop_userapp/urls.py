@@ -6,7 +6,7 @@ urlpatterns = [
     
     #pages
     path('',views.index_view, name='index_view'),
-    path('shop_view/<>',views.shop_view, name='shop_view'),
+    path('shop_view/',views.shop_view, name='shop_view'),
     path('checkout_view/',views.checkout_view, name='checkout_view'),
     path('contact_view/',views.contact_view, name='contact_view'),
     path('pro_deatils_view/<int:id>/',views.pro_deatils_view, name='pro_deatils_view'),
@@ -30,6 +30,7 @@ urlpatterns = [
     path('payment_view/',views.payment_view,name='payment_view'),   
     path('payment_view/<int:id>/',views.payment_view,name='payment_view_with_id'),
     path('payment_success/',views.payment_success_view,name='payment_success'),
+    path('payment_success/<str:order_id>/',views.payment_success_view,name='payment_success_with_id'),
     path('order_history/',views.order_history_view,name='order_history_view'),
     
     
